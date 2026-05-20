@@ -123,6 +123,8 @@ function App() {
                         <th scope="col">Capital</th>
                         <th scope="col">Population</th>
                         <th scope="col">Region</th>
+                        <th scope="col">Currencies</th>
+                        <th scope="col">Languages</th>
                         <th scope="col" className="text-end">Actions</th>
                       </tr>
                       </thead>
@@ -135,6 +137,8 @@ function App() {
                           <td>
                             <span className="badge rounded-pill text-bg-info">{dest.region || 'N/A'}</span>
                           </td>
+                          <td>{dest.currencies || 'N/A'}</td>
+                          <td>{dest.languages || 'N/A'}</td>
                           <td className="text-end">
                             <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(dest.id)}>
                               Remove

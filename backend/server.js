@@ -28,7 +28,9 @@ const createTable = async () => {
       country VARCHAR(255) NOT NULL,
       capital VARCHAR(255),
       population BIGINT,
-      region VARCHAR(255)
+      region VARCHAR(255),
+      currencies VARCHAR(255),
+      languages VARCHAR(255)
     );
   `;
   try {
@@ -63,12 +65,19 @@ app.post('/api/destinations', async (req, res) => {
     const response = await axios.get(`${process.env.COUNTRIES_API_BASE_URL}/name/${encodeURIComponent(country)}`);
     const countryInfo = response.data[0];
 
+    const currencies = countryInfo.currencies
+      ? Object.values(countryInfo.currencies).map(c => c.name).join(', ')
+      : null;
+    const languages = countryInfo.languages
+      ? Object.values(countryInfo.languages).map(l => typeof l === 'string' ? l : l.name).join(', ')
+      : null;
+
     // Insert data into the MySQL database
     const [result] = await pool.query(
-      'INSERT INTO destinations (country, capital, population, region) VALUES (?, ?, ?, ?)',
-      [country, countryInfo.capital[0], countryInfo.population, countryInfo.region]
+      'INSERT INTO destinations (country, capital, population, region, currencies, languages) VALUES (?, ?, ?, ?, ?, ?)',
+      [country, countryInfo.capital[0], countryInfo.population, countryInfo.region, currencies, languages]
     );
-    res.status(201).json({ id: result.insertId, country, capital: countryInfo.capital[0], population: countryInfo.population, region: countryInfo.region });
+    res.status(201).json({ id: result.insertId, country, capital: countryInfo.capital[0], population: countryInfo.population, region: countryInfo.region, currencies, languages });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
